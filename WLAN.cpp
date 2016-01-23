@@ -183,12 +183,12 @@ void WLAN::setToAddress(WLANAddr *daddr, struct sockaddr_ll *to) {
 }
 
 // Send
-bool WLAN::send(char* buff, WLANAddr *daddr) {
+bool WLAN::send(char** buff, WLANAddr *daddr) {
   struct sockaddr_ll to = {0};
   setToAddress(daddr, &to);
 
    int sentlen=sendto(
-      ifconfig.sockid, buff, strlen(buff), 0,
+      ifconfig.sockid, *buff, strlen(*buff), 0,
          (sockaddr *) &to, sizeof(to));
    // Check errors
    if (sentlen == -1 ) {

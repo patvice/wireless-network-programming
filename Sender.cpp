@@ -17,14 +17,14 @@ Sender::~Sender(){
    delete buffFrame;
 }
 
-char* Sender::buff(){
-   return buffFrame;
+char** Sender::buff(){
+   return &buffFrame;
 }
 
 
 int main(int argc, char ** argv) {
-   // char a[]="ff:ff:ff:ff:ff:ff"; // broadcast address
-   char address[]="1c:bd:b9:7e:b6:5a"; // unicast address
+   // char address[]="1c:bd:b9:7e:b6:5a"; // unicast address
+   char address[]="ff:ff:ff:ff:ff:ff"; // broadcast address
    char message[]="This is a test frame"; // data
 
    // create a wireless network abstraction
@@ -42,8 +42,8 @@ int main(int argc, char ** argv) {
    WLAN::WLANHeader* hdr = aWLAN->buildHeader(address, &daddr);
 
    // memmove probably need to be changed somehow
-   memmove(aSender->buff(), hdr, headerLen);
-   memmove(aSender->buff()+headerLen, message, strlen(message));
+   memmove(*aSender->buff(), hdr, headerLen);
+   memmove(*aSender->buff()+headerLen, message, strlen(message));
 
    aWLAN->send(aSender->buff(), &daddr);
    return 0;

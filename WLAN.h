@@ -105,7 +105,7 @@ private:
 
 public:
    // Send a frame
-   bool send(char* buff, WLANAddr *daddr);
+   bool send(char** buff, WLANAddr *daddr);
    // Send helpers
    WLANHeader* buildHeader(char address[], WLANAddr *daddr);
    void setToAddress(WLANAddr *daddr, struct sockaddr_ll *to);

@@ -6,7 +6,7 @@ class Sender {
 public:
   Sender(int headerLen, int messageLen);
   ~Sender();
-  char* buff();
+  char** buff();
 private:
   char* buffFrame;
 };
