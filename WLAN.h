@@ -31,14 +31,18 @@ public:
    WLAN(string interface);
    // Destructor
    ~WLAN();
-   // Initialize 
+   // Initialize
    bool init();
    // Send a frame
-   bool send(char address[], char message[]);
+   bool send(char* address[], char* message[]);
+   // Send helpers
+   void buildHeader(char address[], WLANAddr *daddr);
+   void setToAddress(WLANAddr *daddr, struct sockaddr_ll *to);
    // Set a handler
    void setHandler(Handler* aHandler);
    // Receive a frame
    void receive();
+
 private:
    // Constants
    static const int WLAN_ADDR_LEN = 6;
@@ -95,12 +99,9 @@ private:
    bool createSocket();
    bool fetchInterfaceIndex();
    bool fetchHardwareAddress();
-   bool fetchMTU(); 
-   bool addPromiscuousMode(); 
-   bool bindSocketToInterface(); 
-   // Send helpers  
-   void buildHeader(char address[], WLANAddr *daddr);
-   void setToAddress(WLANAddr *daddr, struct sockaddr_ll *to);
+   bool fetchMTU();
+   bool addPromiscuousMode();
+   bool bindSocketToInterface();
    // Receive helper
    void parseReceivedFrame(char buff[]);
 };
