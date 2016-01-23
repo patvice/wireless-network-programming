@@ -33,15 +33,12 @@ public:
    ~WLAN();
    // Initialize
    bool init();
-   // Send a frame
-   bool send(char* address[], char* message[]);
-   // Send helpers
-   void buildHeader(char address[], WLANAddr *daddr);
-   void setToAddress(WLANAddr *daddr, struct sockaddr_ll *to);
    // Set a handler
    void setHandler(Handler* aHandler);
    // Receive a frame
    void receive();
+   // Returns Lenght of the Header
+   int getAddressLength();
 
 private:
    // Constants
@@ -49,6 +46,8 @@ private:
    static const int WLAN_HEADER_LEN = 14;
    static const unsigned short IP_TYPE = 0x3901;
    const string WLAN_BROADCAST = "ff:ff:ff:ff:ff:ff";
+
+public:
    // Structure of a network address
    struct WLANAddr{
       // address
@@ -58,7 +57,6 @@ private:
       // define the address from a human readable form
       int str2wlan(char s[]);
    };
-
    // Structure of a frame header
    struct WLANHeader{
        // destination address
@@ -68,7 +66,7 @@ private:
        // type
        unsigned short type;
    };
-
+private:
    // Structure of a network interface configuration
    struct Ifconfig{
       // socket descriptor
@@ -104,4 +102,12 @@ private:
    bool bindSocketToInterface();
    // Receive helper
    void parseReceivedFrame(char buff[]);
+
+public:
+   // Send a frame
+   bool send(char* buff, WLANAddr *daddr);
+   // Send helpers
+   WLANHeader* buildHeader(char address[], WLANAddr *daddr);
+   void setToAddress(WLANAddr *daddr, struct sockaddr_ll *to);
+
 };

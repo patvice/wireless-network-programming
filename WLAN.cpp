@@ -161,7 +161,7 @@ bool WLAN::init() {
 }
 
 // build a frame header
-void WLAN::buildHeader(char address[], WLANAddr *daddr) {
+WLAN::WLANHeader* WLAN::buildHeader(char address[], WLANAddr *daddr) {
    // conversion of  destination address from ASCII to binary
    daddr->str2wlan(address);
    // store the destination address
@@ -170,6 +170,8 @@ void WLAN::buildHeader(char address[], WLANAddr *daddr) {
    memmove(&hdr.srcAddr, ifconfig.hwaddr.data, WLAN_ADDR_LEN);
    // set the type field
    hdr.type=htons(IP_TYPE);
+
+   return &hdr;
 }
 
 // set the "to address"
@@ -181,12 +183,12 @@ void WLAN::setToAddress(WLANAddr *daddr, struct sockaddr_ll *to) {
 }
 
 // Send
-bool WLAN::send(char* buff[], WLANAddr *daddr) {
+bool WLAN::send(char* buff, WLANAddr *daddr) {
   struct sockaddr_ll to = {0};
-  setToAddress(&daddr, &to);
+  setToAddress(daddr, &to);
 
    int sentlen=sendto(
-      ifconfig.sockid, *buff, strlen(*message), 0,
+      ifconfig.sockid, buff, strlen(buff), 0,
          (sockaddr *) &to, sizeof(to));
    // Check errors
    if (sentlen == -1 ) {

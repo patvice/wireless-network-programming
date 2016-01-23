@@ -4,9 +4,9 @@
 
 class Sender {
 public:
-  Sender();
+  Sender(int headerLen, int messageLen);
   ~Sender();
   char* buff();
 private:
-  char* buff[];
+  char* buffFrame;
 };

@@ -10,16 +10,15 @@ using namespace std;
 
 
 Sender::Sender(int headerLen, int messageLen){
-   char b[headerLen+messageLen];
-   buff = &b;
+   buffFrame=new char[headerLen+messageLen];
 }
 
 Sender::~Sender(){
-   delete buff;
+   delete buffFrame;
 }
 
-Sender::buf(){
-   return buff;
+char* Sender::buff(){
+   return buffFrame;
 }
 
 
@@ -28,21 +27,22 @@ int main(int argc, char ** argv) {
    char address[]="1c:bd:b9:7e:b6:5a"; // unicast address
    char message[]="This is a test frame"; // data
 
-
-   int headerLen = aWLAN->getAddressLength()
-   // create a sender
-   Sender* aSender=new Sender(headerLen, strlen(message));
    // create a wireless network abstraction
    WLAN* aWLAN=new WLAN(LABEL);
    // initialize
    aWLAN->init();
+   // get header length
+   int headerLen = aWLAN->getAddressLength();
+   // create a sender
+   Sender* aSender=new Sender(headerLen, strlen(message));
 
    // Build Address
    WLAN::WLANAddr daddr;
-   aWLAN->buildHeader(address, &daddr);
+
+   WLAN::WLANHeader* hdr = aWLAN->buildHeader(address, &daddr);
 
    // memmove probably need to be changed somehow
-   memmove(aSender->buff(), &hdr, WLAN_HEADER_LEN);
+   memmove(aSender->buff(), hdr, headerLen);
    memmove(aSender->buff()+headerLen, message, strlen(message));
 
    aWLAN->send(aSender->buff(), &daddr);
