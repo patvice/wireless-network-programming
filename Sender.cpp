@@ -8,17 +8,43 @@
 
 using namespace std;
 
+
+Sender::Sender(int headerLen, int messageLen){
+   buffFrame=new char[headerLen+messageLen];
+}
+
+Sender::~Sender(){
+   delete buffFrame;
+}
+
+char** Sender::buff(){
+   return &buffFrame;
+}
+
+
 int main(int argc, char ** argv) {
-   // create a sender
-   Sender* aSender=new Sender();
+   // char address[]="1c:bd:b9:7e:b6:5a"; // unicast address
+   char address[]="ff:ff:ff:ff:ff:ff"; // broadcast address
+   char message[]="This is a test frame"; // data
+
    // create a wireless network abstraction
    WLAN* aWLAN=new WLAN(LABEL);
-   // initialize 
+   // initialize
    aWLAN->init();
-   // send a frame
-   char a[]="ff:ff:ff:ff:ff:ff"; // broadcast address
-   // char a[]="1c:bd:b9:7e:b6:5a"; // unicast address
-   char f[]="This is a test frame"; // data
-   aWLAN->send(a, f);
+   // get header length
+   int headerLen = aWLAN->getAddressLength();
+   // create a sender
+   Sender* aSender=new Sender(headerLen, strlen(message));
+
+   // Build Address
+   WLAN::WLANAddr daddr;
+
+   WLAN::WLANHeader* hdr = aWLAN->buildHeader(address, &daddr);
+
+   // memmove probably need to be changed somehow
+   memmove(*aSender->buff(), hdr, headerLen);
+   memmove(*aSender->buff()+headerLen, message, strlen(message));
+
+   aWLAN->send(aSender->buff(), &daddr);
    return 0;
 }
